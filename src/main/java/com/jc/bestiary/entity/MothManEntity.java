@@ -27,6 +27,7 @@ public class MothManEntity extends PathfinderMob implements GeoEntity {
         controllers.add(new AnimationController<>(this, "walk", 5, state -> state.setAndContinue(DefaultAnimations.WALK)));
     }
 
+    // TODO: figure out how this works
     protected <E extends MothManEntity> PlayState walkAnimController(final AnimationState<E> event) {
         if (event.isMoving())
             return event.setAndContinue(WALK_ANIM);
