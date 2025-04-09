@@ -1,26 +1,21 @@
 package com.jc.bestiary;
 
+import com.jc.bestiary.client.renderer.geo.entity.BrownBearRenderer;
 import com.jc.bestiary.client.renderer.geo.entity.MothManRenderer;
+import com.jc.bestiary.entity.BrownBearEntity;
 import com.jc.bestiary.entity.MothManEntity;
 
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import com.jc.bestiary.registry.BestiaryCreative;
+import com.jc.bestiary.registry.BestiaryEntities;
+import com.jc.bestiary.registry.BestiaryItems;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.registries.*;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -45,31 +40,6 @@ public class Bestiary
     public static final String MODID = "bestiary";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
-    // here's my custom entity registry
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Bestiary.MODID);
-    // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "examplemod" namespace
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
-
-    // let's register mothman
-    public static final Supplier<EntityType<MothManEntity>> MOTHMAN = ENTITIES.register("mothman",
-            () -> EntityType.Builder.of(MothManEntity::new, MobCategory.CREATURE)
-                    .sized(0.8f, 2.0f)
-                    .clientTrackingRange(8)
-                    .build(Bestiary.MODID + ":mothman"));
-
-    public static final DeferredItem<Item> MOTHMAN_SPAWN_EGG = ITEMS.register("mothman_spwan_egg",
-            () -> new DeferredSpawnEggItem(MOTHMAN, 0x4a4639, 0xf7e82f, new Item.Properties()));
-
-    // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.bestiary")) //The language key for the title of your CreativeModeTab
-            .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> MOTHMAN_SPAWN_EGG.get().getDefaultInstance())
-            .displayItems((parameters, output) -> {
-                output.accept(MOTHMAN_SPAWN_EGG.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
-            }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
@@ -79,13 +49,11 @@ public class Bestiary
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onAttributeCreation);
 
-        ENTITIES.register(modEventBus);
-        // Register the Deferred Register to the mod event bus so blocks get registered
-        //BLOCKS.register(modEventBus);
+        BestiaryEntities.ENTITIES.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
-        ITEMS.register(modEventBus);
+        BestiaryItems.ITEMS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
-        CREATIVE_MODE_TABS.register(modEventBus);
+        BestiaryCreative.CREATIVE_MODE_TABS.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (Bestiary) to respond directly to events.
@@ -115,16 +83,17 @@ public class Bestiary
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
-        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS)
-            event.accept(MOTHMAN_SPAWN_EGG);
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+            event.accept(BestiaryItems.MOTHMAN_SPAWN_EGG);
+            event.accept(BestiaryItems.BROWN_BEAR_SPAWN_EGG);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
     {
-        // Do something when the server starts
-        LOGGER.info("HELLO from server starting");
+
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -135,17 +104,18 @@ public class Bestiary
         public static void onClientSetup(FMLClientSetupEvent event)
         {
             // Some client setup code
-            LOGGER.info("HELLO FROM CLIENT SETUP");
-            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+
         }
 
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(Bestiary.MOTHMAN.get(), MothManRenderer::new);
+            event.registerEntityRenderer(BestiaryEntities.MOTHMAN.get(), MothManRenderer::new);
+            event.registerEntityRenderer(BestiaryEntities.BROWN_BEAR.get(), BrownBearRenderer::new);
         }
     }
 
     private void onAttributeCreation(EntityAttributeCreationEvent event) {
-        event.put(Bestiary.MOTHMAN.get(), MothManEntity.createAttributes().build());
+        event.put(BestiaryEntities.MOTHMAN.get(), MothManEntity.createAttributes().build());
+        event.put(BestiaryEntities.BROWN_BEAR.get(), BrownBearEntity.createAttributes().build());
     }
 }

@@ -1,3 +1,8 @@
+There used to be a MothmanModel.java here, but I think it's redundant since I'm using the DefaultedGeoModel
+in the MothmanRenderer
+
+Here's what was in it
+
 package com.jc.bestiary.client.model.geo.entity;
 
 import com.jc.bestiary.Bestiary;
