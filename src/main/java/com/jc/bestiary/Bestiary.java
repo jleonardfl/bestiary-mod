@@ -4,7 +4,10 @@ import com.jc.bestiary.client.renderer.geo.entity.MothManRenderer;
 import com.jc.bestiary.entity.MothManEntity;
 
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
@@ -56,9 +59,8 @@ public class Bestiary
                     .clientTrackingRange(8)
                     .build(Bestiary.MODID + ":mothman"));
 
-    public static final DeferredItem<DeferredSpawnEggItem> MOTHMAN_SPAWN_EGG = ITEMS.registerItem("mothman_spawn_egg",
-            properties -> new DeferredSpawnEggItem(MOTHMAN, 0x6E0000, 0x000000, properties));
-
+    public static final DeferredItem<Item> MOTHMAN_SPAWN_EGG = ITEMS.register("mothman_spwan_egg",
+            () -> new DeferredSpawnEggItem(MOTHMAN, 0x4a4639, 0xf7e82f, new Item.Properties()));
 
     // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
@@ -75,7 +77,7 @@ public class Bestiary
     {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::createDefaultAttributes);
+        modEventBus.addListener(this::onAttributeCreation);
 
         ENTITIES.register(modEventBus);
         // Register the Deferred Register to the mod event bus so blocks get registered
@@ -139,17 +141,11 @@ public class Bestiary
 
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(
-                    Bestiary.MOTHMAN.get(),
-                    MothManRenderer::new
-            );
+            event.registerEntityRenderer(Bestiary.MOTHMAN.get(), MothManRenderer::new);
         }
     }
 
-    public void createDefaultAttributes(EntityAttributeCreationEvent event) {
-        event.put(
-                MOTHMAN.get(),
-                MothManEntity.createMobAttributes().build()
-        );
+    private void onAttributeCreation(EntityAttributeCreationEvent event) {
+        event.put(Bestiary.MOTHMAN.get(), MothManEntity.createAttributes().build());
     }
 }
