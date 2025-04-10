@@ -29,10 +29,7 @@ repositories {
         }
     }
 
-}
-
-// Enable import from Modrinth
-repositories {
+    // Enable import from Modrinth
     // Other repositories can go above or below Modrinth's. We don't need priority :)
     exclusiveContent {
         forRepository {
@@ -45,7 +42,17 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+
+    // Modonomicon Repository
+    maven {
+        url "https://dl.cloudsmith.io/public/klikli-dev/mods/maven/"
+        content {
+            includeGroup "com.klikli_dev"
+        }
+    }
 }
+
+
 
 base {
     archivesName = mod_id
@@ -145,11 +152,12 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    //GeckoLib
+    // GeckoLib
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
-    //DebugUtils
+    // DebugUtils
     implementation "maven.modrinth:orux8o94:TvU10aNN"
-}
+    // Modonomicon Dependency
+    implementation ("com.klikli_dev:modonomicon-${minecraft_version}-neoforge:${modonomicon_version}"){transitive=false}}
 
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.

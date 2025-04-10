@@ -31,7 +31,7 @@ public class MothManEntity extends PathfinderMob implements GeoEntity {
     public static AttributeSupplier.Builder createAttributes() {
         return PathfinderMob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 10D)
-                .add(Attributes.MOVEMENT_SPEED, 0.8D)
+                .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 .add(Attributes.GRAVITY, 0.5D)
                 .add(Attributes.SAFE_FALL_DISTANCE, 16D)
                 .add(Attributes.STEP_HEIGHT, 1.5D)
