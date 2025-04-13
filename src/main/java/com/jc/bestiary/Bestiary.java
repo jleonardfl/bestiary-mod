@@ -31,8 +31,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
-import java.util.function.Supplier;
-
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Bestiary.MODID)
 public class Bestiary
