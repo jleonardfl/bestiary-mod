@@ -2,6 +2,7 @@ package com.jc.bestiary;
 
 import com.jc.bestiary.client.renderer.geo.entity.BrownBearRenderer;
 import com.jc.bestiary.client.renderer.geo.entity.MothManRenderer;
+import com.jc.bestiary.datagen.DataGenerators;
 import com.jc.bestiary.entity.BrownBearEntity;
 import com.jc.bestiary.entity.MothManEntity;
 
@@ -48,6 +49,9 @@ public class Bestiary
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onAttributeCreation);
+
+        // Register my book generator class to datagen modonomicon
+        modEventBus.addListener(DataGenerators::gatherData);
 
         BestiaryEntities.ENTITIES.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered

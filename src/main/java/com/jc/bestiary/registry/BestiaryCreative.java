@@ -19,6 +19,7 @@ public class BestiaryCreative {
             .displayItems((parameters, output) -> {
                 output.accept(BestiaryItems.MOTHMAN_SPAWN_EGG.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
                 output.accept(BestiaryItems.BROWN_BEAR_SPAWN_EGG.get());
+                output.accept(BestiaryItems.BESTIARY_BOOK.get());
             }).build());
 
 
