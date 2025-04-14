@@ -157,7 +157,9 @@ dependencies {
     // DebugUtils
     implementation "maven.modrinth:orux8o94:TvU10aNN"
     // Modonomicon Dependency
-    implementation ("com.klikli_dev:modonomicon-${minecraft_version}-neoforge:${modonomicon_version}"){transitive=false}}
+    def isDatagen = project.hasProperty("datagen")
+    implementation ("com.klikli_dev:modonomicon-${minecraft_version}-neoforge:${modonomicon_version}"){transitive=isDatagen}
+}
 
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
