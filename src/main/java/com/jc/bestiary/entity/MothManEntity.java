@@ -10,14 +10,15 @@ import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class MothManEntity extends PathfinderMob implements GeoEntity {
-    protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("animation.mothman.idle");
-    protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("animation.mothman.walk");
+    //protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("animation.mothman.idle");
+    //protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("animation.mothman.walk");
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
@@ -49,8 +50,16 @@ public class MothManEntity extends PathfinderMob implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "idle", 5, state -> state.setAndContinue(IDLE_ANIM)));
-        controllers.add(new AnimationController<>(this, "walk", 5, state -> state.setAndContinue(WALK_ANIM)));
+        var mainController = new AnimationController<>(this, "mainController", 0, this::animPredicate);
+        controllers.add(mainController);    }
+
+    private <T extends GeoAnimatable> PlayState animPredicate(AnimationState<T> tAnimationState) {
+
+//        if (this.swinging) {
+//            return tAnimationState.setAndContinue(RawAnimation.begin().thenPlay("attack"));
+//        }
+
+        return tAnimationState.setAndContinue(tAnimationState.isMoving() ? RawAnimation.begin().thenPlay("animation.mothman.walk") : RawAnimation.begin().thenPlay("animation.mothman.idle"));
     }
 
     @Override

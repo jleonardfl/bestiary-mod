@@ -20,16 +20,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.UUID;
 
 public class BrownBearEntity extends TamableAnimal implements GeoEntity, ISemiAquaticHunter {
-    protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("animation.brown_bear.idle");
-    protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("animation.brown_bear.walk");
+    //protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("animation.brown_bear.idle");
+    //protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("animation.brown_bear.walk");
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
@@ -54,9 +56,19 @@ public class BrownBearEntity extends TamableAnimal implements GeoEntity, ISemiAq
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "idle", 5, state -> state.setAndContinue(IDLE_ANIM)));
-        controllers.add(new AnimationController<>(this, "walk", 5, state -> state.setAndContinue(WALK_ANIM)));
+        var mainController = new AnimationController<>(this, "mainController", 0, this::animPredicate);
+        controllers.add(mainController);
     }
+
+    private <T extends GeoAnimatable> PlayState animPredicate(AnimationState<T> tAnimationState) {
+
+//        if (this.swinging) {
+//            return tAnimationState.setAndContinue(RawAnimation.begin().thenPlay("attack"));
+//        }
+
+        return tAnimationState.setAndContinue(tAnimationState.isMoving() ? RawAnimation.begin().thenPlay("animation.brown_bear.walk") : RawAnimation.begin().thenPlay("animation.brown_bear.idle"));
+    }
+
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
